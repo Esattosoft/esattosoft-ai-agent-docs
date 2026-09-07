@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  A Windows terminal-based local AI coding workspace with evidence-first analysis, safe edits, approvals, sessions, project rules, model switching, and terminal workflows.
+  A local terminal-based AI coding workspace for Windows and macOS with evidence-first analysis, safe edits, explicit approvals, sessions, project rules, model switching, and controlled terminal workflows.
 </p>
 
 <p align="center">
@@ -18,8 +18,8 @@
 </p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.6.14-blue">
-  <img alt="Platform" src="https://img.shields.io/badge/Windows-x64-blue">
+  <img alt="Windows" src="https://img.shields.io/badge/Windows-v1.6.14%20x64-blue">
+  <img alt="macOS" src="https://img.shields.io/badge/macOS-v1.6.16%20arm64-black">
   <img alt="Ollama" src="https://img.shields.io/badge/Ollama-local%20models-black">
 </p>
 
@@ -27,7 +27,7 @@
 
 ## Install
 
-### Requirements
+### Windows 10/11 x64
 
 - Windows 10/11 x64
 - Ollama
@@ -52,6 +52,46 @@ esattosoft-ai
 ```
 
 The installer downloads the current Windows x64 release, verifies its SHA256 checksum, installs it under your user profile, and adds the install directory to your user PATH when needed.
+
+**Current Windows release:** v1.6.14 x64
+
+### macOS Apple Silicon
+
+Requirements:
+
+- macOS on Apple Silicon (`arm64`)
+- Ollama
+- At least one Ollama model
+
+Recommended model:
+
+```bash
+ollama pull qwen3.5:4b
+```
+
+Install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Esattosoft/esattosoft-ai-agent-docs/main/install.sh | sh
+```
+
+Open a new Terminal window if the installer adds `~/.local/bin` to your PATH.
+
+Start:
+
+```bash
+esattosoft-ai
+```
+
+The macOS installer downloads the current macOS arm64 release, verifies its SHA256 checksum, and installs it to `~/.local/bin/esattosoft-ai`.
+
+**Current macOS release:** v1.6.16 arm64
+
+> macOS Developer ID signing and notarization are not yet part of the current release pipeline.
+
+### Intel Mac / Linux
+
+Intel (`x86_64`) macOS and Linux binary releases are not currently published or formally verified.
 
 ## Highlights
 
@@ -94,7 +134,7 @@ Useful commands:
 
 ## Releases
 
-Windows binaries are published on the Releases page:
+Windows and macOS binaries are published on the Releases page:
 
 https://github.com/Esattosoft/esattosoft-ai-agent-docs/releases
 
@@ -110,7 +150,7 @@ Each installer download is verified against the SHA256 value in the release meta
 
 The Esattosoft AI Agent application source is maintained in a private development repository.
 
-This public repository contains documentation, installer metadata, public assets, and release downloads.
+This public repository contains documentation, Windows and macOS installers, release metadata, public assets, and compiled release downloads.
 
 ## Privacy
 
