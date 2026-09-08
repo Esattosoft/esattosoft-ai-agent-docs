@@ -1,7 +1,7 @@
 {
-  "version": "1.6.14",
-  "windows_x64": "https://github.com/Esattosoft/esattosoft-ai-agent-docs/releases/download/v1.6.14/esattosoft-ai-windows-x64.exe",
-  "sha256": "42112b58250d80b5c42a170b9faa9d963371efd4290dc284e00d6cd3601883f1",
+  "version": "1.6.17",
+  "windows_x64": "https://github.com/Esattosoft/esattosoft-ai-agent-docs/releases/download/v1.6.17/esattosoft-ai-windows-x64.zip",
+  "sha256": "e77253704eed3a8e3bb274db9f85a0d687b78d9f52dfe8b371d0de817a2c2f7d",
   "macos_arm64_version": "1.6.16",
   "macos_arm64": "https://github.com/Esattosoft/esattosoft-ai-agent-docs/releases/download/v1.6.16/esattosoft-ai-macos-arm64",
   "macos_arm64_sha256": "41941042a3920507fe22257ed39a61a5b571e76dc1c21e49fe2b1e0c2709598f"

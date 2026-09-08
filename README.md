@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <img alt="Windows" src="https://img.shields.io/badge/Windows-v1.6.14%20x64-blue">
+  <img alt="Windows" src="https://img.shields.io/badge/Windows-v1.6.17%20x64-blue">
   <img alt="macOS" src="https://img.shields.io/badge/macOS-v1.6.16%20arm64-black">
   <img alt="Ollama" src="https://img.shields.io/badge/Ollama-local%20models-black">
 </p>
@@ -51,9 +51,9 @@ Then start:
 esattosoft-ai
 ```
 
-The installer downloads the current Windows x64 release, verifies its SHA256 checksum, installs it under your user profile, and adds the install directory to your user PATH when needed.
+The installer downloads the current Windows x64 standalone ZIP, verifies the ZIP SHA256 checksum, extracts the complete compiled runtime under your user profile, and adds the standalone install directory to your user PATH when needed. Windows v1.6.17 uses the standalone package rather than Nuitka onefile because standalone Ctrl+C behavior is the verified release path.
 
-**Current Windows release:** v1.6.14 x64
+**Current Windows release:** v1.6.17 x64
 
 ### macOS Apple Silicon
 
