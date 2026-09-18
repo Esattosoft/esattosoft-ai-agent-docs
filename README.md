@@ -19,7 +19,7 @@
 
 <p align="center">
   <img alt="Windows" src="https://img.shields.io/badge/Windows-v1.6.17%20x64-blue">
-  <img alt="macOS" src="https://img.shields.io/badge/macOS-v1.6.17%20arm64-black">
+  <img alt="macOS" src="https://img.shields.io/badge/macOS-v1.6.16%20arm64-black">
   <img alt="Ollama" src="https://img.shields.io/badge/Ollama-local%20models-black">
 </p>
 
@@ -83,9 +83,9 @@ Start:
 esattosoft-ai
 ```
 
-The macOS installer downloads the current macOS arm64 standalone archive, verifies the archive SHA256 checksum, extracts the complete compiled runtime to `~/.local/lib/esattosoft-ai`, and exposes `~/.local/bin/esattosoft-ai` as the command. macOS v1.6.17 uses the verified standalone package rather than Nuitka onefile because the onefile candidate exited unexpectedly after a compiled Ctrl+C workflow.
+The macOS installer downloads the current macOS arm64 release, verifies its SHA256 checksum, and installs it to `~/.local/bin/esattosoft-ai`.
 
-**Current macOS release:** v1.6.17 arm64
+**Current macOS release:** v1.6.16 arm64
 
 > macOS Developer ID signing and notarization are not yet part of the current release pipeline.
 
