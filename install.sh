@@ -7,8 +7,13 @@ set -eu
 
 REPO="Esattosoft/esattosoft-ai-agent-docs"
 METADATA_URL="https://raw.githubusercontent.com/${REPO}/main/latest.json"
-INSTALL_DIR="${HOME}/.local/bin"
-INSTALL_PATH="${INSTALL_DIR}/esattosoft-ai"
+
+BIN_DIR="${HOME}/.local/bin"
+COMMAND_PATH="${BIN_DIR}/esattosoft-ai"
+
+RUNTIME_PARENT="${HOME}/.local/lib"
+RUNTIME_DIR="${RUNTIME_PARENT}/esattosoft-ai"
+RUNTIME_EXEC="${RUNTIME_DIR}/esattosoft-ai"
 
 step() {
     printf '[Esattosoft] %s\n' "$1"
@@ -53,6 +58,7 @@ fi
 
 command -v curl >/dev/null 2>&1 || fail "curl is required but was not found."
 [ -x /usr/bin/shasum ] || fail "shasum is required but was not found."
+[ -x /usr/bin/tar ] || fail "tar is required but was not found."
 
 step "Checking latest macOS release..."
 
@@ -72,22 +78,24 @@ step "Latest macOS version: $VERSION"
 TEMP_DIR="$(/usr/bin/mktemp -d "${TMPDIR:-/tmp}/esattosoft-ai-install.XXXXXX")" \
     || fail "Could not create temporary directory."
 
-TEMP_BINARY="${TEMP_DIR}/esattosoft-ai"
+TEMP_ARCHIVE="${TEMP_DIR}/esattosoft-ai-macos-arm64.tar.gz"
+EXTRACT_DIR="${TEMP_DIR}/extract"
+OLD_RUNTIME_BACKUP="${TEMP_DIR}/old-runtime"
+OLD_COMMAND_BACKUP="${TEMP_DIR}/old-command"
 
 step "Downloading Esattosoft AI Agent..."
 
-/usr/bin/curl \
+ /usr/bin/curl \
     -fL \
     --retry 3 \
     --connect-timeout 20 \
     "$DOWNLOAD_URL" \
-    -o "$TEMP_BINARY" \
+    -o "$TEMP_ARCHIVE" \
     || fail "Download failed."
 
 step "Verifying SHA256..."
 
-ACTUAL_SHA="$(/usr/bin/shasum -a 256 "$TEMP_BINARY" | /usr/bin/awk '{print $1}')"
-
+ACTUAL_SHA="$(/usr/bin/shasum -a 256 "$TEMP_ARCHIVE" | /usr/bin/awk '{print $1}')"
 EXPECTED_SHA="$(printf '%s' "$EXPECTED_SHA" | /usr/bin/tr '[:upper:]' '[:lower:]')"
 ACTUAL_SHA="$(printf '%s' "$ACTUAL_SHA" | /usr/bin/tr '[:upper:]' '[:lower:]')"
 
@@ -97,12 +105,72 @@ fi
 
 ok "SHA256 verified."
 
-/bin/mkdir -p "$INSTALL_DIR"
+step "Extracting standalone package..."
 
-/usr/bin/install -m 0755 "$TEMP_BINARY" "$INSTALL_PATH" \
-    || fail "Could not install executable."
+/bin/mkdir -p "$EXTRACT_DIR"
+/usr/bin/tar -xzf "$TEMP_ARCHIVE" -C "$EXTRACT_DIR" \
+    || fail "Could not extract the downloaded package."
 
-ok "Installed to $INSTALL_PATH"
+if [ ! -f "${EXTRACT_DIR}/esattosoft-ai" ]; then
+    fail "Downloaded package is invalid: esattosoft-ai was not found after extraction."
+fi
+
+if [ ! -x "${EXTRACT_DIR}/esattosoft-ai" ]; then
+    /bin/chmod 0755 "${EXTRACT_DIR}/esattosoft-ai" \
+        || fail "Could not make the extracted executable runnable."
+fi
+
+PACKAGE_FILE_COUNT="$(/usr/bin/find "$EXTRACT_DIR" -type f | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
+if [ "${PACKAGE_FILE_COUNT:-0}" -lt 2 ]; then
+    fail "Downloaded standalone package appears incomplete."
+fi
+
+/bin/mkdir -p "$BIN_DIR" "$RUNTIME_PARENT"
+
+# Preserve the current runtime so an installation failure can roll back.
+if [ -e "$RUNTIME_DIR" ]; then
+    /bin/mv "$RUNTIME_DIR" "$OLD_RUNTIME_BACKUP" \
+        || fail "Could not back up the existing runtime."
+fi
+
+# Preserve an existing command. v1.6.16 used a regular single binary here.
+if [ -e "$COMMAND_PATH" ] || [ -L "$COMMAND_PATH" ]; then
+    /bin/mv "$COMMAND_PATH" "$OLD_COMMAND_BACKUP" \
+        || {
+            if [ -e "$OLD_RUNTIME_BACKUP" ]; then
+                /bin/mv "$OLD_RUNTIME_BACKUP" "$RUNTIME_DIR" 2>/dev/null || true
+            fi
+            fail "Could not back up the existing command."
+        }
+fi
+
+INSTALL_OK=0
+
+if /bin/mv "$EXTRACT_DIR" "$RUNTIME_DIR"; then
+    if [ -x "$RUNTIME_EXEC" ]; then
+        if /bin/ln -s "$RUNTIME_EXEC" "$COMMAND_PATH"; then
+            INSTALL_OK=1
+        fi
+    fi
+fi
+
+if [ "$INSTALL_OK" -ne 1 ]; then
+    /bin/rm -f "$COMMAND_PATH" 2>/dev/null || true
+    /bin/rm -rf "$RUNTIME_DIR" 2>/dev/null || true
+
+    if [ -e "$OLD_RUNTIME_BACKUP" ]; then
+        /bin/mv "$OLD_RUNTIME_BACKUP" "$RUNTIME_DIR" 2>/dev/null || true
+    fi
+
+    if [ -e "$OLD_COMMAND_BACKUP" ] || [ -L "$OLD_COMMAND_BACKUP" ]; then
+        /bin/mv "$OLD_COMMAND_BACKUP" "$COMMAND_PATH" 2>/dev/null || true
+    fi
+
+    fail "Installation failed. The previous installation was restored where possible."
+fi
+
+ok "Installed standalone runtime to $RUNTIME_DIR"
+ok "Command available at $COMMAND_PATH"
 
 SHELL_NAME="$(/usr/bin/basename "${SHELL:-/bin/zsh}")"
 
